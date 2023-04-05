@@ -1,7 +1,6 @@
-import json
 from datetime import datetime
 from random import randint
-
+from customer import Customer
 
 class Product:
     """
@@ -31,125 +30,100 @@ class Product:
     def set_price(self, value) -> None:
         self.price = value
 
-    def increase_quantity(self, number: int) -> None:
-        if type(number) != int:
-            raise TypeError("quantity must be an integer")
-        self.quantity += number
-
-    def decrease_quantity(self, number: int) -> None:
-        if type(number) != int:
-            raise TypeError("quantity must be an integer")
-        if number > self.quantity:
-            raise ValueError("quantity cannot go below zero.")
-        self.quantity -= number
-
-    def set_quantity(self, number: int) -> None:
-        if type(number) != int:
-            raise TypeError("quantity must be an integer")
-        self.quantity = number
-
 
 class Inventory:
     """ 
-    Inventory structure: {product_id_1:[product_object_1, quantity_1],
-                         product_id_2:[product_object_2, quantity_2]}
+    Inventory structure: {product_1: quantity_1,
+                         product_2: quantity_2,
+                         product_3: quantity_3}
     """
 
     def __init__(self) -> None:
         self.inventory = {}
 
-    def add_product(self, product: Product, quantity: int) -> list:
-        self.inventory.update({product.product_id: [product, quantity]})
+    def add_product(self, product: Product, quantity: int) -> dict:
+        if product in self.inventory:
+            self.inventory[product] += quantity
+        else:
+            self.inventory[product] = quantity
 
-    def remove_product(self):
-        pass
+    def remove_product(self, product: Product, quantity: int):
+        if product in self.inventory:
+            if self.inventory[product] >= quantity:
+                self.inventory[product] -= quantity
+            else:
+                raise ValueError("Not enough stock for product.")
+        else:
+            raise ValueError("Product not in inventory.")
 
     def value(self) -> float:
-        return sum(
-            product[0].price*product[1] for product in self.inventory.values()
-        )
-
-    def product_value(self, product_id_key: str) -> float:
-        return self.inventory[product_id_key][0].price * self.inventory[product_id_key][1]
+        total = 0
+        for product, quantity in self.inventory.items():
+            total += product.price*quantity
+        return total
 
 
-class Orders:
+class Cart:
+    """
+
+    """
+
     def __init__(self) -> None:
+        self.items = {}
+
+    def add_product(self, product: Product, quantity: int = 1) -> dict:
+        if product in self.items:
+            self.items[product] += quantity
+        else:
+            self.items[product] = quantity
+
+    def remove_product(self, product: Product, quantity: int = 1) -> dict:
+        if product in self.items:
+            if self.items[product] >= quantity:
+                self.items[product] -= quantity
+            else:
+                del self.items[product]
+
+    def value(self) -> float:
+        total = 0
+        for product, quantity in self.items.items():
+            total += product.price*quantity
+        return total
+
+    def get_items(self) -> dict:
+        return self.items
+
+
+class Order:
+    """
+    
+    """
+    def __init__(self, customer: Customer, cart: Cart) -> None:
+        self.customer = customer
         self.status = "open"
-        self.products = []
+        self.cart = cart
         self.creation_date = datetime.today()
+        self.total_price = cart.value()
 
     def add_product(self, product: Product, quantity: int) -> None:
-        self.products.append((product, quantity))
+        self.cart.append((product, quantity))
 
-    def total_price(self) -> float:
-        return sum(i[0].price*i[1] for i in self.products)
+    def checkout(self, inventory: Inventory) -> None:
+        payment_success = self.process_payment()
 
-    def confirm_order(self, inventory: Inventory) -> None:
-        pass
-
-
-def inventory_check(order: Orders, inventory: Inventory) -> bool:
-    """
-        Takes in an order class and inventory class and checks if enough stock in inventory to complete order.
-    """
-    fail_check = False
-    for i in order.products:
-        if i[0].product_id in inventory.inventory.keys():
-            if i[1] > inventory.inventory[i[0].product_id][1]:
-                print(f"Not enough stock for product: {i[0].name}")
-                fail_check = True
-            else:
-                print(f"Enough stock for product: {i[0].name}")
+        if payment_success:
+            self.fulfill_order(inventory)
         else:
-            print("Product not in inventory.")
-            fail_check = True
+            raise ValueError("Payment was not successful")
 
-    if fail_check:
-        return False
-    else:
+    def process_payment(self):
+        # Assume payment process is always successful
         return True
 
+    def fulfill_order(self, inventory: Inventory):
+        for product, quantity in self.cart.items.items():
+            inventory.remove_product(product, quantity)
+            print(f"Completed order for {quantity} {product.name}")
+        self.status = "closed"
 
-with open("products_with_id.json", mode="r") as f:
-    product_data = json.load(f)
 
-inventory = Inventory()
-for product in product_data["product"]:
-    inventory.add_product(
-        Product(
-            product["name"],
-            product["product_id"],
-            product["price"],
-        ),
-        randint(1, 10)
-    )
-
-print(inventory.inventory)
-# print(inventory.inventory['2bbcfa74-a261-4748-87a3-c923b696eb0c'][0].__str__())
-# print(inventory.product_value(
-#     '2bbcfa74-a261-4748-87a3-c923b696eb0c'))
-# print(inventory.value())
-
-ps5 = Product("PS5", "2bbcfa74-a261-4748-87a3-c923b696eb0c", "479")
-xbx = Product("Xbox Series X", "5b80d4d5-71ac-4512-a01b-55db4d9700a4", "420")
-
-order1 = Orders()
-
-for k in [ps5, xbx]:
-    order1.add_product(k, 5)
-# print(order1.products)
-x = inventory_check(order1, inventory)
-print(x)
-#  print(inventory.inventory[0].data_dict())
-# print(inventory.value())
-# print([product.product_id for product in inventory.inventory])
-# print([products.product_id for a, products in enumerate(inventory.inventory)])
-
-# inventory.inventory[0].decrease_quantity(6)
-# print(inventory.inventory[0].quantity)
-
-# inventory.inventory[0].set_price(500)
-# print(inventory.inventory[0].price)
-
-# print(inventory.value())
