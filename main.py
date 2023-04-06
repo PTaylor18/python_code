@@ -23,13 +23,17 @@ def main() -> None:
 
     paul = Customer("Paul", "Taylor", "pm.taylor18@gmail.com", "07480296417")
 
-    cart = Cart()
-    cart.add_product(ps5)
-    cart.add_product(xbx)
+    basket = Basket()
+    basket.add_product(ps5)
+    basket.add_product(xbx)
 
-    order = Order(paul, cart)
+    order = Order(paul, basket, "orders")
+    print(order.order_id)
     order.checkout(inventory)
 
+    order = Order(paul, basket, "orders")
+    print(order.order_id)
+    order.checkout(inventory)
 
 if __name__ == "__main__":
     main()
