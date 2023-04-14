@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Order Details Schema",
-  "type": "string",
+  "type": "object",
   "properties": {
     "order_id": {
       "type": "string"
@@ -26,38 +26,21 @@
     },
     "product": {
       "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "Name": {
-              "type": "string"
-            },
-            "Product_id": {
-              "type": "string"
-            },
-            "Price": {
-              "type": "number"
-            }
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string"
           },
-          "required": ["Name", "Product_id", "Price"]
+          "Product_id": {
+            "type": "string"
+          },
+          "Price": {
+            "type": "number"
+          }
         },
-        {
-          "type": "object",
-          "properties": {
-            "Name": {
-              "type": "string"
-            },
-            "Product_id": {
-              "type": "string"
-            },
-            "Price": {
-              "type": "number"
-            }
-          },
-          "required": ["Name", "Product_id", "Price"]
-        }
-      ]
+        "required": ["Name", "Product_id", "Price"]
+      }
     },
     "total_price": {
       "type": "number"

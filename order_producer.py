@@ -3,13 +3,16 @@ from confluent_kafka import Producer
 from confluent_kafka.serialization import SerializationContext, MessageField
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.json_schema import JSONSerializer
-from read_config import read_ccloud_config
+from jsonschema import validate
 
 from config import config, sr_config
 
 with open("order_schema.json", mode="r") as f:
     schema_str = json.load(f)
-    schema_str = json.dumps(schema_str, indent=2)
+    #schema_str = json.dumps(schema_str)
+
+test = json.dumps(schema_str)
+
 
 def acked(err, msg):
     if err is not None:
@@ -23,10 +26,10 @@ def acked(err, msg):
 
 
 def order_producer(key, message):
-    topic = "orders"
+    topic = "orders-v2"
     schema_registry_client = SchemaRegistryClient(sr_config)
 
-    json_serializer = JSONSerializer(schema_str, schema_registry_client)
+    json_serializer = JSONSerializer(test, schema_registry_client)
 
     producer = Producer(config)
     producer.produce(topic, key=key,
@@ -35,4 +38,4 @@ def order_producer(key, message):
                      callback=acked)
     producer.flush()
 
-# send a kafka message which has order id as the key and the value is a json file of the cart, price, payment success ...
+

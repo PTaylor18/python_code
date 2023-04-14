@@ -1,5 +1,6 @@
 from ecommerce_classes import *
 import json
+from random import choice, choices, randint
 
 
 def main() -> None:
@@ -15,25 +16,35 @@ def main() -> None:
                 product["product_id"],
                 product["price"],
             ),
-            randint(1, 10)
+            1000
         )
 
     ps5 = list(inventory.inventory.keys())[0]
     xbx = list(inventory.inventory.keys())[1]
+    ns = list(inventory.inventory.keys())[2]
 
-    paul = Customer("Paul", "Taylor", "pm.taylor18@gmail.com", "07480296417")
+    first_names = ["Walter", "Jesse", "Gus",
+                   "Mike", "Saul", "Hank", "Skyler", "Hector"]
+    last_names = ["White", "Pinkman", "Fring", "Ehrmantraut",
+                  "Goodman", "Schrader", "White", "Salamanca"]
 
-    basket = Basket()
-    basket.add_product(ps5)
-    basket.add_product(xbx)
+    for i in range(10):
+        first_name = choice(first_names)
+        last_name = choice(last_names)
+        customer = Customer(first_name=first_name, last_name=last_name,
+                            email=f"{first_name.lower()}{last_name.lower()}@email.com",
+                            phone="07"+"".join(choices("0123456789", k=9))
+                            )
 
-    order = Order(paul, basket, "orders")
-    print(order.order_id)
-    order.checkout(inventory)
+        basket = Basket()
+        basket.add_product(ps5, randint(1, 10))
+        # basket.add_product(xbx, randint(1, 10))
+        # basket.add_product(ns, randint(1, 10))
 
-    order = Order(paul, basket, "orders")
-    print(order.order_id)
-    order.checkout(inventory)
+        order = Order(customer, basket)
+        print(order.order_id)
+        order.checkout(inventory)
+
 
 if __name__ == "__main__":
     main()
