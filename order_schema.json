@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Order Details Schema",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    },
+    "creation_date": {
+      "type": "string"
+    },
+    "customer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "email", "phone"]
+    },
+    "product": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "Product_id": {
+            "type": "string"
+          },
+          "Price": {
+            "type": "number"
+          }
+        },
+        "required": ["Name", "Product_id", "Price"]
+      }
+    },
+    "total_price": {
+      "type": "number"
+    },
+    "order_status": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "order_id",
+    "creation_date",
+    "customer",
+    "product",
+    "total_price",
+    "order_status"
+  ]
+}

@@ -55,6 +55,9 @@ coverage.xml
 *.mo
 *.pot
 
+# Kafka Configuration
+client.properties
+
 # Django stuff:
 *.log
 local_settings.py

@@ -1,0 +1,22 @@
+{
+    "product": [
+      {
+        "name": "PS5",
+        "product_id": "2bbcfa74-a261-4748-87a3-c923b696eb0c",
+        "price": "479",
+        "quantity": ""
+      },
+      {
+        "name": "Xbox Series X",
+        "product_id": null,
+        "price": "",
+        "quantity": ""
+      },
+      {
+        "name": "Nintendo Switch",
+        "product_id": null,
+        "price": "",
+        "quantity": ""
+      }   
+    ] 
+  }
